@@ -26,10 +26,126 @@ Note: this repo does not currently include `shadcn/ui` setup. There is no `compo
 - Vitest
 - Playwright
 
-## Local Development
+## First-Time Setup (macOS)
+
+These steps are for students starting from a mostly clean Mac. If you already have `git`, `brew`, `gh`, `node`, and `pnpm`, you can skip to [Local Development](#local-development).
+
+### 1. Install Apple Command Line Tools
+
+This gives you Git and other developer tools that many JavaScript packages expect.
+
+```bash
+xcode-select --install
+```
+
+After that finishes, confirm Git is available:
+
+```bash
+git --version
+```
+
+### 2. Install Homebrew
+
+Homebrew is the package manager we will use for the rest of the setup.
+
+Official site: [brew.sh](https://brew.sh/)
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+When the installer finishes, follow the exact "Next steps" it prints in Terminal so `brew` is added to your shell correctly. The command differs between Apple Silicon and Intel Macs.
+
+Then verify it worked:
+
+```bash
+brew --version
+```
+
+### 3. Install GitHub CLI
+
+GitHub CLI makes it much easier to clone the repo, authenticate Git, and push your branch.
+
+Official site: [cli.github.com](https://cli.github.com/)
+
+```bash
+brew install gh
+gh auth login
+gh auth status
+```
+
+Recommended options during `gh auth login`:
+
+- Choose `GitHub.com`
+- Choose `HTTPS`
+- Say `yes` when it asks whether Git should authenticate with your GitHub credentials
+
+### 4. Install Node.js
+
+Install the current LTS version of Node.js from the official download page:
+
+- [Node.js download page](https://nodejs.org/en/download)
+
+As of March 11, 2026, the Node.js site lists `v24.14.0` as LTS.
+
+After installing it, confirm both Node and npm are available:
+
+```bash
+node --version
+npm --version
+```
+
+If you prefer, you can also install Node with Homebrew. The official installer is usually the least confusing option for students.
+
+### 5. Install pnpm
+
+This repo uses `pnpm` as its package manager.
+
+Official docs: [pnpm installation](https://pnpm.io/installation)
+
+Recommended setup:
+
+```bash
+npm install --global corepack@latest
+corepack enable pnpm
+pnpm --version
+```
+
+If you want a Homebrew-based fallback instead, pnpm's docs also support:
+
+```bash
+brew install pnpm
+```
+
+### 6. Clone the Repository
+
+If you have GitHub CLI set up:
+
+```bash
+gh repo clone danielapassos/Codex-Lab
+cd Codex-Lab
+```
+
+If you prefer plain Git:
+
+```bash
+git clone https://github.com/danielapassos/Codex-Lab.git
+cd Codex-Lab
+```
+
+### 7. Install Dependencies
 
 ```bash
 pnpm install
+```
+
+### 8. Open the Repo in Codex
+
+Once the repo is on your machine, open the `Codex-Lab` folder in the Codex app and start working from there.
+
+## Local Development
+
+```bash
 pnpm dev
 ```
 

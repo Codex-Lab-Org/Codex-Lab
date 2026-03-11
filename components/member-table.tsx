@@ -1,9 +1,7 @@
-"use client";
-
 import { AvatarBadge } from "@/components/avatar-badge";
 import {
   ArrowUpRightIcon,
-  GithubIcon,
+  InstagramIcon,
   LinkedInIcon,
   XIcon,
 } from "@/components/icons";
@@ -12,11 +10,10 @@ import type { Member } from "@/lib/members";
 
 type MemberTableProps = {
   members: Member[];
-  totalMembers: number;
-  selectedId: string | null;
-  connectedIds: Set<string>;
-  onSelect: (memberId: string | null) => void;
-  onHover: (memberId: string | null) => void;
+  selectedId?: string | null;
+  connectedIds?: Set<string>;
+  onSelect?: (memberId: string) => void;
+  onHover?: (memberId: string | null) => void;
 };
 
 function LinkIcon({
@@ -34,144 +31,134 @@ function LinkIcon({
 
   return (
     <a
-      className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/8 bg-white/4 text-[var(--muted)] transition-colors hover:border-[var(--border-strong)] hover:bg-white/8 hover:text-[var(--text)]"
+      className="inline-flex h-6 w-6 items-center justify-center text-[var(--text)]/72 transition-colors hover:text-[var(--text)]"
       href={href}
       aria-label={label}
       target="_blank"
       rel="noopener noreferrer"
-      onClick={(event) => {
-        event.stopPropagation();
-      }}
     >
       {children}
     </a>
   );
 }
 
+function EmptyCell({ minHeight = "min-h-[1.5rem]" }: { minHeight?: string }) {
+  return <span aria-hidden="true" className={`block ${minHeight}`} />;
+}
+
+function WebsiteCell({ member }: { member: Member }) {
+  if (!member.website) {
+    return <EmptyCell />;
+  }
+
+  return (
+    <a
+      className="inline-flex items-center gap-1.5 text-[var(--text)] transition-colors hover:text-[var(--accent)]"
+      href={member.website}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <span className="truncate">{formatWebsiteLabel(member.website)}</span>
+      <ArrowUpRightIcon className="h-3.5 w-3.5 shrink-0" />
+    </a>
+  );
+}
+
+function SocialLinks({ member }: { member: Member }) {
+  return (
+    <div className="flex min-h-[1.5rem] items-center gap-3">
+      <LinkIcon href={member.links.instagram} label={`${member.name} on Instagram`}>
+        <InstagramIcon className="h-5 w-5" />
+      </LinkIcon>
+      <LinkIcon href={member.links.x} label={`${member.name} on X`}>
+        <XIcon className="h-5 w-5" />
+      </LinkIcon>
+      <LinkIcon href={member.links.linkedin} label={`${member.name} on LinkedIn`}>
+        <LinkedInIcon className="h-5 w-5" />
+      </LinkIcon>
+    </div>
+  );
+}
+
 export function MemberTable({
   members,
-  totalMembers,
-  selectedId,
+  selectedId = null,
   connectedIds,
   onSelect,
   onHover,
 }: MemberTableProps) {
-  const countLabel =
-    members.length === totalMembers
-      ? `${totalMembers} members`
-      : `${members.length} of ${totalMembers} members`;
+  const hasAnyWebsite = members.some((member) => Boolean(member.website));
 
   return (
-    <section aria-label="Lab member directory" className="space-y-4 sm:space-y-5">
-      <div className="flex flex-wrap items-baseline justify-between gap-4">
-        <div>
+    <section aria-label="Student directory" className="space-y-5">
+      <div className="flex items-baseline justify-between gap-4">
+        <div className="space-y-2">
           <p className="micro-label text-[var(--muted)]">Directory</p>
-          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[var(--text)]">
-            Browse the people building around the Lab
+          <h2 className="text-2xl font-semibold tracking-tight text-[var(--text)]">
+            Students
           </h2>
         </div>
-        <p className="micro-label text-[var(--muted)]">{countLabel}</p>
+        <p className="micro-label text-[var(--muted)]">{members.length} students</p>
       </div>
 
       <div className="space-y-3 xl:hidden">
         {members.length === 0 ? (
-          <div className="surface-panel rounded-[1.75rem] px-5 py-8 text-sm text-[var(--muted)]">
-            No members match the current search and filters yet.
+          <div className="surface-panel rounded-[1.5rem] px-5 py-8 text-sm text-[var(--muted)]">
+            No students are available yet.
           </div>
         ) : null}
 
         {members.map((member) => {
           const isSelected = member.id === selectedId;
-          const isConnected = connectedIds.has(member.id) && !isSelected;
+          const isConnected = connectedIds?.has(member.id) ?? false;
 
           return (
             <article
               key={member.id}
-              aria-pressed={isSelected}
               className={`surface-panel rounded-[1.5rem] px-4 py-4 transition-colors ${
                 isSelected
-                  ? "bg-[var(--accent-soft)]"
+                  ? "border-[var(--border-strong)] bg-[var(--panel-strong)]"
                   : isConnected
-                    ? "bg-white/[0.035]"
-                    : "bg-transparent hover:bg-white/[0.025]"
-              }`}
-              role="button"
-              tabIndex={0}
-              onClick={() => onSelect(isSelected ? null : member.id)}
-              onFocus={() => onHover(member.id)}
-              onBlur={() => onHover(null)}
-              onMouseEnter={() => onHover(member.id)}
-              onMouseLeave={() => onHover(null)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") {
-                  event.preventDefault();
-                  onSelect(isSelected ? null : member.id);
+                    ? "bg-[var(--panel-soft)]"
+                    : ""
+              } ${onSelect ? "cursor-pointer" : ""}`.trim()}
+              onClick={(event) => {
+                if ((event.target as HTMLElement).closest("a")) {
+                  return;
                 }
+
+                onSelect?.(member.id);
               }}
+              onMouseEnter={() => onHover?.(member.id)}
+              onMouseLeave={() => onHover?.(null)}
             >
-              <div className="space-y-3 sm:grid sm:grid-cols-[minmax(0,1.3fr)_minmax(0,0.95fr)_auto] sm:items-start sm:gap-4 sm:space-y-0">
-                <div className="flex min-w-0 items-center gap-3">
-                  <AvatarBadge member={member} />
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-[var(--text)]">
-                      {member.name}
-                    </p>
-                    <p className="mt-1 text-xs text-[var(--muted)]">
-                      {member.disciplines.join(" · ")}
-                    </p>
+            <div className="flex items-center gap-3">
+              <AvatarBadge member={member} />
+              <p className="text-base font-medium text-[var(--text)]">{member.name}</p>
+            </div>
+
+            <div
+              className={`mt-4 gap-x-4 gap-y-3 text-sm ${
+                hasAnyWebsite ? "grid grid-cols-2" : "space-y-3"
+              }`}
+            >
+              <div className="space-y-1">
+                <p className="micro-label text-[var(--muted)]">university</p>
+                <p className="text-[var(--text)]">{member.university ?? <EmptyCell />}</p>
+              </div>
+              {hasAnyWebsite ? (
+                <div className="space-y-1">
+                  <p className="micro-label text-[var(--muted)]">site</p>
+                  <div className="text-[var(--text)]">
+                    <WebsiteCell member={member} />
                   </div>
                 </div>
-
-                <div className="min-w-0 sm:pt-1">
-                  {member.website ? (
-                    <a
-                      className="inline-flex max-w-full items-center gap-1.5 text-sm text-[var(--text)] transition-colors hover:text-[var(--accent)]"
-                      href={member.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                      }}
-                    >
-                      <span className="truncate">{formatWebsiteLabel(member.website)}</span>
-                      <ArrowUpRightIcon className="h-3.5 w-3.5 shrink-0" />
-                    </a>
-                  ) : (
-                    <span className="text-sm text-[var(--muted)]/70">—</span>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-2 sm:justify-end">
-                  <LinkIcon href={member.links.github} label={`${member.name} on GitHub`}>
-                    <GithubIcon />
-                  </LinkIcon>
-                  <LinkIcon
-                    href={member.links.linkedin}
-                    label={`${member.name} on LinkedIn`}
-                  >
-                    <LinkedInIcon />
-                  </LinkIcon>
-                  <LinkIcon href={member.links.x} label={`${member.name} on X`}>
-                    <XIcon />
-                  </LinkIcon>
-                  <LinkIcon
-                    href={member.links.other}
-                    label={`${member.name} external profile`}
-                  >
-                    <ArrowUpRightIcon />
-                  </LinkIcon>
-                  {!member.links.github &&
-                  !member.links.linkedin &&
-                  !member.links.x &&
-                  !member.links.other ? (
-                    <span className="text-sm text-[var(--muted)]/70">—</span>
-                  ) : null}
-                </div>
-
-                <p className="text-sm leading-6 text-[var(--muted)] sm:col-span-3">
-                  {member.focus}
-                </p>
+              ) : null}
+              <div className={`space-y-1 ${hasAnyWebsite ? "col-span-2" : ""}`}>
+                <p className="micro-label text-[var(--muted)]">links</p>
+                <SocialLinks member={member} />
               </div>
+            </div>
             </article>
           );
         })}
@@ -181,120 +168,74 @@ export function MemberTable({
         <div className="surface-panel overflow-x-auto">
           <table className="min-w-full table-fixed border-separate border-spacing-0">
             <colgroup>
-              <col className="w-[34%]" />
-              <col className="w-[32%]" />
-              <col className="w-[20%]" />
-              <col className="w-[14%]" />
+              <col className={hasAnyWebsite ? "w-[34%]" : "w-[42%]"} />
+              <col className={hasAnyWebsite ? "w-[24%]" : "w-[28%]"} />
+              {hasAnyWebsite ? <col className="w-[22%]" /> : null}
+              <col className={hasAnyWebsite ? "w-[20%]" : "w-[30%]"} />
             </colgroup>
-            <thead className="border-b border-white/5 bg-[rgba(6,9,15,0.92)]">
+            <thead className="border-b border-[var(--border)] bg-[var(--panel-strong)]">
               <tr className="micro-label text-left text-[var(--muted)]">
                 <th className="px-5 py-4 font-medium">name</th>
-                <th className="px-5 py-4 font-medium">focus</th>
-                <th className="px-5 py-4 font-medium">site</th>
+                <th className="px-5 py-4 font-medium">university</th>
+                {hasAnyWebsite ? <th className="px-5 py-4 font-medium">site</th> : null}
                 <th className="px-5 py-4 font-medium">links</th>
               </tr>
             </thead>
             <tbody>
               {members.length === 0 ? (
                 <tr>
-                  <td className="px-5 py-10 text-sm text-[var(--muted)]" colSpan={4}>
-                    No members match the current search and filters yet.
+                  <td
+                    className="px-5 py-10 text-sm text-[var(--muted)]"
+                    colSpan={hasAnyWebsite ? 4 : 3}
+                  >
+                    No students are available yet.
                   </td>
                 </tr>
               ) : null}
 
               {members.map((member) => {
                 const isSelected = member.id === selectedId;
-                const isConnected = connectedIds.has(member.id) && !isSelected;
+                const isConnected = connectedIds?.has(member.id) ?? false;
 
                 return (
                   <tr
                     key={member.id}
-                    aria-selected={isSelected}
-                    className={`cursor-pointer border-t border-white/5 transition-colors ${
+                    className={`border-t border-[var(--border)] transition-colors ${
                       isSelected
-                        ? "bg-[var(--accent-soft)]"
+                        ? "bg-[var(--panel-soft-strong)]"
                         : isConnected
-                          ? "bg-white/[0.035]"
-                          : "bg-transparent hover:bg-white/[0.025]"
-                    }`}
-                    tabIndex={0}
-                    onClick={() => onSelect(isSelected ? null : member.id)}
-                    onFocus={() => onHover(member.id)}
-                    onBlur={() => onHover(null)}
-                    onMouseEnter={() => onHover(member.id)}
-                    onMouseLeave={() => onHover(null)}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter" || event.key === " ") {
-                        event.preventDefault();
-                        onSelect(isSelected ? null : member.id);
+                          ? "bg-[var(--panel-soft)]"
+                          : "hover:bg-[var(--panel-soft)]"
+                    } ${onSelect ? "cursor-pointer" : ""}`.trim()}
+                    onClick={(event) => {
+                      if ((event.target as HTMLElement).closest("a")) {
+                        return;
                       }
+
+                      onSelect?.(member.id);
                     }}
+                    onMouseEnter={() => onHover?.(member.id)}
+                    onMouseLeave={() => onHover?.(null)}
                   >
-                    <td className="px-5 py-4 align-top">
-                      <div className="flex items-center gap-3">
-                        <AvatarBadge member={member} />
-                        <div className="min-w-0">
-                          <p className="truncate text-sm font-medium text-[var(--text)]">
-                            {member.name}
-                          </p>
-                          <p className="mt-1 text-xs text-[var(--muted)]">
-                            {member.disciplines.join(" · ")}
-                          </p>
-                        </div>
-                      </div>
+                  <td className="px-5 py-5 align-middle">
+                    <div className="flex items-center gap-4">
+                      <AvatarBadge member={member} />
+                      <p className="truncate text-sm font-medium text-[var(--text)]">
+                        {member.name}
+                      </p>
+                    </div>
+                  </td>
+                  <td className="px-5 py-5 align-middle text-sm text-[var(--text)]">
+                    {member.university ?? <EmptyCell />}
+                  </td>
+                  {hasAnyWebsite ? (
+                    <td className="px-5 py-5 align-middle text-sm text-[var(--text)]">
+                      <WebsiteCell member={member} />
                     </td>
-                    <td className="max-w-[16rem] px-5 py-4 align-top text-sm leading-6 text-[var(--text)]">
-                      {member.focus}
-                    </td>
-                    <td className="px-5 py-4 align-top text-sm text-[var(--muted)]">
-                      {member.website ? (
-                        <a
-                          className="inline-flex items-center gap-1.5 text-[var(--text)] transition-colors hover:text-[var(--accent)]"
-                          href={member.website}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={(event) => {
-                            event.stopPropagation();
-                          }}
-                        >
-                          <span className="max-w-[11rem] truncate 2xl:max-w-[13rem]">
-                            {formatWebsiteLabel(member.website)}
-                          </span>
-                          <ArrowUpRightIcon className="h-3.5 w-3.5" />
-                        </a>
-                      ) : (
-                        <span className="text-[var(--muted)]/70">—</span>
-                      )}
-                    </td>
-                    <td className="px-5 py-4 align-top">
-                      <div className="flex items-center gap-2">
-                        <LinkIcon href={member.links.github} label={`${member.name} on GitHub`}>
-                          <GithubIcon />
-                        </LinkIcon>
-                        <LinkIcon
-                          href={member.links.linkedin}
-                          label={`${member.name} on LinkedIn`}
-                        >
-                          <LinkedInIcon />
-                        </LinkIcon>
-                        <LinkIcon href={member.links.x} label={`${member.name} on X`}>
-                          <XIcon />
-                        </LinkIcon>
-                        <LinkIcon
-                          href={member.links.other}
-                          label={`${member.name} external profile`}
-                        >
-                          <ArrowUpRightIcon />
-                        </LinkIcon>
-                        {!member.links.github &&
-                        !member.links.linkedin &&
-                        !member.links.x &&
-                        !member.links.other ? (
-                          <span className="text-sm text-[var(--muted)]/70">—</span>
-                        ) : null}
-                      </div>
-                    </td>
+                  ) : null}
+                  <td className="px-5 py-5 align-middle">
+                    <SocialLinks member={member} />
+                  </td>
                   </tr>
                 );
               })}

@@ -1,70 +1,51 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, test, vi } from "vitest";
+import { describe, expect, test } from "vitest";
 
 import { MemberTable } from "@/components/member-table";
 import type { Member } from "@/lib/members";
 
 const sampleMembers: Member[] = [
   {
-    id: "noor-akhtar",
-    name: "Noor Akhtar",
-    focus: "Applied research for knowledge systems and memory layers",
-    disciplines: ["Research"],
-    domains: ["Knowledge systems", "Agents"],
+    id: "jason-yi",
+    name: "Jason Yi",
+    university: "UC Berkeley",
     links: {
-      linkedin: "https://www.linkedin.com/in/noorakhtar",
+      instagram: "https://www.instagram.com/jasonyi33/",
+      linkedin: "https://www.linkedin.com/in/jasonyi33/",
+      x: "https://x.com/jasonyi361",
     },
-    connections: [],
   },
   {
-    id: "sage-bell",
-    name: "Sage Bell",
-    focus: "Ops infrastructure for experiments and reliable rollouts",
-    disciplines: ["Operations", "Engineering"],
-    domains: ["Automation", "Developer tools"],
-    links: {},
-    connections: [],
+    id: "james-masson",
+    name: "James Masson",
+    links: {
+      linkedin: "https://www.linkedin.com/in/james-masson-94a390257/",
+    },
   },
 ];
 
 describe("MemberTable", () => {
-  test("renders the fixed directory columns and placeholder states", () => {
-    render(
-      <MemberTable
-        members={sampleMembers}
-        totalMembers={sampleMembers.length}
-        selectedId={null}
-        connectedIds={new Set()}
-        onSelect={() => {}}
-        onHover={() => {}}
-      />,
-    );
+  test("renders the student directory columns and blank cells", () => {
+    render(<MemberTable members={sampleMembers} />);
 
-    expect(screen.getByText("name")).toBeInTheDocument();
-    expect(screen.getByText("focus")).toBeInTheDocument();
-    expect(screen.getByText("site")).toBeInTheDocument();
-    expect(screen.getByText("links")).toBeInTheDocument();
-    expect(screen.getByText("2 members")).toBeInTheDocument();
-    expect(screen.getAllByText("Noor Akhtar").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("—").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("name").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("university").length).toBeGreaterThan(0);
+    expect(screen.queryByText("site")).not.toBeInTheDocument();
+    expect(screen.getAllByText("links").length).toBeGreaterThan(0);
+    expect(screen.getByText("2 students")).toBeInTheDocument();
+    expect(screen.getAllByText("Jason Yi").length).toBeGreaterThan(0);
+    expect(screen.getAllByLabelText("Jason Yi on Instagram")).toHaveLength(2);
+    expect(screen.queryByText("—")).not.toBeInTheDocument();
   });
 
-  test("calls onSelect when a row is activated", () => {
-    const handleSelect = vi.fn();
+  test("renders working social links", () => {
+    render(<MemberTable members={sampleMembers} />);
 
-    render(
-      <MemberTable
-        members={sampleMembers}
-        totalMembers={sampleMembers.length}
-        selectedId={null}
-        connectedIds={new Set()}
-        onSelect={handleSelect}
-        onHover={() => {}}
-      />,
+    fireEvent.click(screen.getAllByLabelText("James Masson on LinkedIn")[0]);
+
+    expect(screen.getAllByLabelText("James Masson on LinkedIn")[0]).toHaveAttribute(
+      "href",
+      "https://www.linkedin.com/in/james-masson-94a390257/",
     );
-
-    fireEvent.click(screen.getAllByText("Sage Bell")[0]);
-
-    expect(handleSelect).toHaveBeenCalledWith("sage-bell");
   });
 });

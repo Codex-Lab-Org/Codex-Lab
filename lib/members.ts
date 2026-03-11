@@ -1,171 +1,160 @@
 export type MemberLinks = {
-  github?: string;
+  instagram?: string;
   linkedin?: string;
   x?: string;
-  other?: string;
+  tiktok?: string;
 };
 
 export type Member = {
   id: string;
   name: string;
-  focus: string;
+  university?: string;
   website?: string;
   avatar?: string;
-  disciplines: string[];
-  domains: string[];
   links: MemberLinks;
-  connections: string[];
 };
 
-export const members: Member[] = [
-  {
-    id: "dani-park",
-    name: "Dani Park",
-    focus: "Agent systems and reusable orchestration patterns",
-    website: "https://danipark.dev",
-    disciplines: ["Engineering", "Research"],
-    domains: ["Agents", "Developer tools", "Automation"],
+type RawMember = Omit<Member, "links"> & {
+  links: {
+    instagram?: string;
+    linkedin?: string;
+    x?: string;
+    tiktok?: string;
+  };
+};
+
+function normalizeUrl(value?: string, baseUrl?: string) {
+  if (!value) {
+    return undefined;
+  }
+
+  const trimmedValue = value.trim();
+
+  if (!trimmedValue) {
+    return undefined;
+  }
+
+  if (/^https?:\/\//i.test(trimmedValue)) {
+    return trimmedValue;
+  }
+
+  if (/^www\./i.test(trimmedValue)) {
+    return `https://${trimmedValue}`;
+  }
+
+  if (!baseUrl) {
+    return trimmedValue;
+  }
+
+  const normalizedHandle = trimmedValue.replace(/^@/, "");
+
+  return `${baseUrl}${normalizedHandle}/`;
+}
+
+function normalizeMember(member: RawMember): Member {
+  return {
+    ...member,
+    university: member.university?.trim() || undefined,
+    website: normalizeUrl(member.website),
     links: {
-      github: "https://github.com/danipark",
-      linkedin: "https://www.linkedin.com/in/danipark",
-      x: "https://x.com/danipark",
+      instagram: normalizeUrl(member.links.instagram, "https://www.instagram.com/"),
+      linkedin: normalizeUrl(member.links.linkedin),
+      x: normalizeUrl(member.links.x, "https://x.com/"),
+      tiktok: normalizeUrl(member.links.tiktok, "https://www.tiktok.com/@"),
     },
-    connections: ["mira-patel", "jules-mercer", "rowan-lee"],
+  };
+}
+
+const rawMembers: RawMember[] = [
+  {
+    id: "jason-yi",
+    name: "Jason Yi",
+    university: "UC Berkeley",
+    avatar: "/avatars/students/jason-yi.jpg",
+    links: {
+      instagram: "@jasonyi33",
+      linkedin: "https://www.linkedin.com/in/jasonyi33/",
+      x: "@jasonyi361",
+      tiktok: "@jasonyi33",
+    },
   },
   {
-    id: "mira-patel",
-    name: "Mira Patel",
-    focus: "Human-in-the-loop workflow design for Lab experiments",
-    website: "https://miraforms.studio",
-    disciplines: ["Design", "Product"],
-    domains: ["Automation", "Education", "Creative tools"],
+    id: "jay-khemchandani",
+    name: "Jay Khemchandani",
+    university: "Stanford",
+    avatar: "/avatars/students/jay-khemchandani.jpg",
     links: {
-      linkedin: "https://www.linkedin.com/in/mirapatel",
-      other: "https://read.cv/mirapatel",
+      linkedin: "www.linkedin.com/in/jay-khemchandani",
+      x: "jaykhem_",
     },
-    connections: ["dani-park", "jules-mercer", "priya-sol", "max-ortega"],
   },
   {
-    id: "jules-mercer",
-    name: "Jules Mercer",
-    focus: "Developer experience for multi-agent tooling",
-    website: "https://julesmercer.dev",
-    disciplines: ["Engineering", "Product"],
-    domains: ["Developer tools", "Automation"],
+    id: "jake-grigorian",
+    name: "Jake Grigorian",
+    university: "USC",
+    avatar: "/avatars/students/jake-grigorian.jpg",
     links: {
-      github: "https://github.com/julesmercer",
-      x: "https://x.com/julesmercer",
+      instagram: "@jake.grigorian",
+      linkedin: "https://linkedin.com/in/jakegrigorian",
     },
-    connections: ["dani-park", "mira-patel", "sage-bell", "noor-akhtar"],
   },
   {
-    id: "noor-akhtar",
-    name: "Noor Akhtar",
-    focus: "Applied research for knowledge systems and memory layers",
-    disciplines: ["Research"],
-    domains: ["Knowledge systems", "Education", "Agents"],
+    id: "dylan-li",
+    name: "Dylan Li",
+    university: "University of Michigan",
+    avatar: "/avatars/students/dylan-li.jpg",
     links: {
-      linkedin: "https://www.linkedin.com/in/noorakhtar",
+      linkedin: "https://www.linkedin.com/in/lidylan/",
     },
-    connections: ["jules-mercer", "rowan-lee", "tess-kim"],
   },
   {
-    id: "rowan-lee",
-    name: "Rowan Lee",
-    focus: "Scientific workflows for agentic labs",
-    website: "https://rowanlee.science",
-    disciplines: ["Research", "Engineering"],
-    domains: ["Science", "Agents", "Automation"],
+    id: "mark-music",
+    name: "Mark Music",
+    university: "Stanford",
+    avatar: "/avatars/students/mark-music.jpg",
     links: {
-      github: "https://github.com/rowanlee",
-      other: "https://scholar.google.com/rowanlee",
+      instagram: "https://www.instagram.com/markmusic2727/",
+      linkedin: "https://www.linkedin.com/in/markmusic27/",
+      x: "https://x.com/markmusic27",
     },
-    connections: ["dani-park", "noor-akhtar", "sage-bell"],
   },
   {
-    id: "tess-kim",
-    name: "Tess Kim",
-    focus: "Creative interfaces and toolmaking for collaborative prompts",
-    website: "https://tesskim.co",
-    disciplines: ["Design", "Engineering"],
-    domains: ["Creative tools", "Automation"],
+    id: "james-masson",
+    name: "James Masson",
+    avatar: "/avatars/students/james-masson.jpg",
     links: {
-      github: "https://github.com/tesskim",
-      linkedin: "https://www.linkedin.com/in/tesskim",
+      instagram: "@jameswmasson",
+      linkedin: "https://www.linkedin.com/in/james-masson-94a390257/",
     },
-    connections: ["noor-akhtar", "max-ortega", "elliot-rivera"],
   },
   {
-    id: "elliot-rivera",
-    name: "Elliot Rivera",
-    focus: "Community operations for the builders around the Lab",
-    disciplines: ["Community", "Operations"],
-    domains: ["Community tooling", "Education"],
+    id: "joseph-jojoe",
+    name: "Joseph Jojoe",
+    avatar: "/avatars/students/joseph-jojoe.jpg",
     links: {
-      linkedin: "https://www.linkedin.com/in/elliotrivera",
+      instagram: "https://www.instagram.com/josephjojoe_/",
+      linkedin: "https://www.linkedin.com/in/josephjojoe/",
+      x: "https://x.com/josephjojoe",
     },
-    connections: ["tess-kim", "max-ortega", "priya-sol"],
   },
   {
-    id: "priya-sol",
-    name: "Priya Sol",
-    focus: "Pilot design and product strategy for Lab programs",
-    website: "https://priyasol.com",
-    disciplines: ["Product"],
-    domains: ["Automation", "Community tooling"],
+    id: "soham-kolhe",
+    name: "Soham Kolhe",
+    avatar: "/avatars/students/soham-kolhe.jpg",
     links: {
-      linkedin: "https://www.linkedin.com/in/priyasol",
-      x: "https://x.com/priyasol",
+      instagram: "soham.kolhe7",
+      linkedin: "https://www.linkedin.com/in/soham-kolhe/",
     },
-    connections: ["mira-patel", "elliot-rivera", "sage-bell"],
   },
   {
-    id: "max-ortega",
-    name: "Max Ortega",
-    focus: "Narrative systems, launches, and operator storytelling",
-    website: "https://maxortega.media",
-    disciplines: ["Storytelling", "Community"],
-    domains: ["Creative tools", "Education"],
+    id: "ryan-fernandes",
+    name: "Ryan Fernandes",
+    avatar: "/avatars/students/ryan-fernandes.jpg",
     links: {
-      x: "https://x.com/maxortega",
-      other: "https://maxortega.substack.com",
+      instagram: "@ryanmartie",
+      linkedin: "https://www.linkedin.com/in/ryan-fernandes-088109284/",
     },
-    connections: ["mira-patel", "tess-kim", "elliot-rivera"],
-  },
-  {
-    id: "sage-bell",
-    name: "Sage Bell",
-    focus: "Ops infrastructure for experiments and reliable rollouts",
-    disciplines: ["Operations", "Engineering"],
-    domains: ["Automation", "Developer tools"],
-    links: {
-      github: "https://github.com/sagebell",
-      linkedin: "https://www.linkedin.com/in/sagebell",
-    },
-    connections: ["jules-mercer", "rowan-lee", "priya-sol"],
-  },
-  {
-    id: "noah-cho",
-    name: "Noah Cho",
-    focus: "Evaluation harnesses for Lab prototypes",
-    website: "https://noahcho.dev",
-    disciplines: ["Research", "Engineering"],
-    domains: ["Agents", "Developer tools"],
-    links: {
-      github: "https://github.com/noahcho",
-      linkedin: "https://www.linkedin.com/in/noahcho",
-    },
-    connections: ["dani-park", "jules-mercer", "sage-bell"],
-  },
-  {
-    id: "ada-flores",
-    name: "Ada Flores",
-    focus: "Learning design and knowledge publishing for the Lab",
-    disciplines: ["Design", "Storytelling"],
-    domains: ["Education", "Knowledge systems"],
-    links: {
-      other: "https://www.are.na/ada-flores",
-    },
-    connections: ["noor-akhtar", "max-ortega", "mira-patel"],
   },
 ];
+
+export const members = rawMembers.map(normalizeMember);

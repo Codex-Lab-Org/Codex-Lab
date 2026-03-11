@@ -9,63 +9,80 @@ function normalize(value: string) {
   return value.trim().toLowerCase();
 }
 
-export function getFilterOptions(members: Member[]) {
-  const disciplines = Array.from(
-    new Set(members.flatMap((member) => member.disciplines)),
-  ).sort((left, right) => left.localeCompare(right));
-  const domains = Array.from(new Set(members.flatMap((member) => member.domains))).sort(
-    (left, right) => left.localeCompare(right),
-  );
+function getSharedPlatformCount(left: Member, right: Member) {
+  return Object.entries(left.links).reduce((count, [platform, value]) => {
+    if (!value || !right.links[platform as keyof Member["links"]]) {
+      return count;
+    }
 
-  return { disciplines, domains };
+    return count + 1;
+  }, 0);
 }
 
-export function filterMembers(
-  members: Member[],
-  query: string,
-  disciplineFilters: Set<string>,
-  domainFilters: Set<string>,
-) {
-  const normalizedQuery = normalize(query);
+function getPairScore(left: Member, right: Member) {
+  const sharedUniversity =
+    left.university &&
+    right.university &&
+    normalize(left.university) === normalize(right.university);
 
-  return members.filter((member) => {
-    const matchesQuery =
-      normalizedQuery.length === 0 ||
-      [
-        member.name,
-        member.focus,
-        member.website ?? "",
-        member.disciplines.join(" "),
-        member.domains.join(" "),
-      ]
-        .join(" ")
-        .toLowerCase()
-        .includes(normalizedQuery);
-
-    const matchesDisciplines =
-      disciplineFilters.size === 0 ||
-      member.disciplines.some((discipline) => disciplineFilters.has(discipline));
-    const matchesDomains =
-      domainFilters.size === 0 ||
-      member.domains.some((domain) => domainFilters.has(domain));
-
-    return matchesQuery && matchesDisciplines && matchesDomains;
-  });
+  return getSharedPlatformCount(left, right) + (sharedUniversity ? 2 : 0);
 }
 
 export function buildGraphEdges(members: Member[]) {
-  const memberIds = new Set(members.map((member) => member.id));
-  const seenEdges = new Set<string>();
-  const edges: GraphEdge[] = [];
+  const sortedMembers = [...members].sort((left, right) =>
+    left.name.localeCompare(right.name),
+  );
+  const candidatesByMember = new Map<
+    string,
+    Array<{ otherId: string; otherName: string; score: number }>
+  >();
 
-  for (const member of members) {
-    for (const connectionId of member.connections) {
-      if (!memberIds.has(connectionId) || connectionId === member.id) {
+  for (const member of sortedMembers) {
+    candidatesByMember.set(member.id, []);
+  }
+
+  for (let index = 0; index < sortedMembers.length; index += 1) {
+    for (let offset = index + 1; offset < sortedMembers.length; offset += 1) {
+      const left = sortedMembers[index];
+      const right = sortedMembers[offset];
+      const score = getPairScore(left, right);
+
+      if (score === 0) {
         continue;
       }
 
-      const sourceId = member.id < connectionId ? member.id : connectionId;
-      const targetId = member.id < connectionId ? connectionId : member.id;
+      candidatesByMember.get(left.id)?.push({
+        otherId: right.id,
+        otherName: right.name,
+        score,
+      });
+      candidatesByMember.get(right.id)?.push({
+        otherId: left.id,
+        otherName: left.name,
+        score,
+      });
+    }
+  }
+
+  const seenEdges = new Set<string>();
+  const edges: GraphEdge[] = [];
+
+  for (const member of sortedMembers) {
+    const topMatches =
+      candidatesByMember
+        .get(member.id)
+        ?.sort((left, right) => {
+          if (right.score !== left.score) {
+            return right.score - left.score;
+          }
+
+          return left.otherName.localeCompare(right.otherName);
+        })
+        .slice(0, 2) ?? [];
+
+    for (const match of topMatches) {
+      const sourceId = member.id < match.otherId ? member.id : match.otherId;
+      const targetId = member.id < match.otherId ? match.otherId : member.id;
       const edgeId = `${sourceId}:${targetId}`;
 
       if (seenEdges.has(edgeId)) {
@@ -74,6 +91,15 @@ export function buildGraphEdges(members: Member[]) {
 
       seenEdges.add(edgeId);
       edges.push({ sourceId, targetId });
+    }
+  }
+
+  if (edges.length === 0) {
+    for (let index = 0; index < sortedMembers.length - 1; index += 1) {
+      edges.push({
+        sourceId: sortedMembers[index].id,
+        targetId: sortedMembers[index + 1].id,
+      });
     }
   }
 
@@ -129,11 +155,11 @@ export function getInitials(name: string) {
 
 export function getAvatarTone(memberId: string) {
   const tones = [
-    "from-teal-300/70 via-emerald-300/55 to-cyan-300/60",
-    "from-sky-300/70 via-blue-300/55 to-indigo-300/55",
-    "from-lime-300/70 via-emerald-300/50 to-teal-300/60",
-    "from-amber-300/70 via-orange-300/50 to-rose-300/55",
-    "from-fuchsia-300/60 via-violet-300/45 to-sky-300/55",
+    "from-[#AFE2F8] via-[#6DCBF4] to-[#3D8DFF]",
+    "from-[#C89BFF] via-[#B06DFF] to-[#751ED9]",
+    "from-[#CEF4C6] via-[#AAEAA1] to-[#49C779]",
+    "from-[#F9A0A1] via-[#F67576] to-[#F45047]",
+    "from-[#FDD8B9] via-[#FBB882] to-[#F87915]",
   ];
   const seed = memberId.split("").reduce((sum, character) => sum + character.charCodeAt(0), 0);
 

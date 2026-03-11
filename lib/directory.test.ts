@@ -2,53 +2,49 @@ import { describe, expect, test } from "vitest";
 
 import {
   buildGraphEdges,
-  filterMembers,
+  formatWebsiteLabel,
   getConnectedMemberIds,
-  getFilterOptions,
+  getInitials,
 } from "@/lib/directory";
 import { members } from "@/lib/members";
 
 describe("directory helpers", () => {
-  test("collects sorted filter options", () => {
-    const options = getFilterOptions(members);
-
-    expect(options.disciplines).toContain("Engineering");
-    expect(options.domains).toContain("Knowledge systems");
-    expect(options.disciplines[0]).toBe("Community");
-  });
-
-  test("filters members by search text, disciplines, and domains", () => {
-    const results = filterMembers(
-      members,
-      "knowledge",
-      new Set(["Research"]),
-      new Set(["Agents"]),
+  test("keeps the onboarding roster and normalizes shared profile links", () => {
+    expect(members).toHaveLength(9);
+    expect(members.find((member) => member.id === "jay-khemchandani")?.links.linkedin).toBe(
+      "https://www.linkedin.com/in/jay-khemchandani",
     );
-
-    expect(results.map((member) => member.id)).toEqual(["noor-akhtar"]);
+    expect(members.find((member) => member.id === "jason-yi")?.links.tiktok).toBe(
+      "https://www.tiktok.com/@jasonyi33/",
+    );
   });
 
-  test("builds unique graph edges from reciprocal connections", () => {
+  test("formats website labels without the protocol", () => {
+    expect(formatWebsiteLabel("https://www.example.com/studio/")).toBe(
+      "example.com/studio",
+    );
+  });
+
+  test("builds initials for avatar fallbacks", () => {
+    expect(getInitials("Ryan Fernandes")).toBe("RF");
+  });
+
+  test("builds a stable student network from shared university groups", () => {
     const edges = buildGraphEdges(members);
-    const miraEdgeCount = edges.filter(
-      (edge) =>
-        (edge.sourceId === "dani-park" && edge.targetId === "mira-patel") ||
-        (edge.sourceId === "mira-patel" && edge.targetId === "dani-park"),
-    );
 
-    expect(miraEdgeCount).toHaveLength(1);
-    expect(edges.length).toBeGreaterThan(10);
+    expect(edges.length).toBeGreaterThan(0);
+    expect(
+      edges.some(
+        (edge) =>
+          edge.sourceId === "jay-khemchandani" && edge.targetId === "mark-music",
+      ),
+    ).toBe(true);
   });
 
-  test("returns the selected member and their immediate visible connections", () => {
-    const visibleMembers = filterMembers(
-      members,
-      "",
-      new Set(["Product"]),
-      new Set(["Automation"]),
-    );
-    const connectionSet = getConnectedMemberIds("priya-sol", visibleMembers);
+  test("returns the directly connected ids for a selected student", () => {
+    const connectedIds = getConnectedMemberIds("jay-khemchandani", members);
 
-    expect(connectionSet).toEqual(new Set(["priya-sol", "mira-patel"]));
+    expect(connectedIds.has("jay-khemchandani")).toBe(true);
+    expect(connectedIds.has("mark-music")).toBe(true);
   });
 });

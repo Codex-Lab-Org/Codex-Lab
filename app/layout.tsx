@@ -1,22 +1,80 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, Space_Grotesk } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-const displayFont = Space_Grotesk({
+const displayFont = localFont({
+  src: [
+    {
+      path: "../public/fonts/openai-sans-light.otf",
+      weight: "300",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/openai-sans-light-italic.otf",
+      weight: "300",
+      style: "italic",
+    },
+    {
+      path: "../public/fonts/openai-sans-regular.otf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/openai-sans-regular-italic.otf",
+      weight: "400",
+      style: "italic",
+    },
+    {
+      path: "../public/fonts/openai-sans-medium.otf",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/openai-sans-medium-italic.otf",
+      weight: "500",
+      style: "italic",
+    },
+    {
+      path: "../public/fonts/openai-sans-semibold.otf",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/openai-sans-semibold-italic.otf",
+      weight: "600",
+      style: "italic",
+    },
+    {
+      path: "../public/fonts/openai-sans-bold.otf",
+      weight: "700",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/openai-sans-bold-italic.otf",
+      weight: "700",
+      style: "italic",
+    },
+  ],
   variable: "--font-display",
-  subsets: ["latin"],
+  display: "swap",
 });
 
-const monoFont = IBM_Plex_Mono({
-  variable: "--font-mono",
-  subsets: ["latin"],
-  weight: ["400", "500"],
+const bodyFont = localFont({
+  src: [
+    {
+      path: "../public/fonts/sf-pro-display-regular.otf",
+      weight: "400",
+      style: "normal",
+    },
+  ],
+  variable: "--font-body",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Codex Lab Network",
+  title: "ChatGPT Lab student directory",
   description:
-    "A directory-first network for Codex Lab members, collaborators, and the people building with them.",
+    "A student directory built from the ChatGPT Lab onboarding roster.",
 };
 
 export default function RootLayout({
@@ -26,7 +84,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${displayFont.variable} ${monoFont.variable} antialiased`}>
+      <body className={`${displayFont.variable} ${bodyFont.variable} antialiased`}>
         {children}
       </body>
     </html>

@@ -10,7 +10,14 @@ import {
   forceY,
   type SimulationLinkDatum,
 } from "d3-force";
-import { useEffect, useEffectEvent, useRef, useState } from "react";
+import {
+  useEffect,
+  useEffectEvent,
+  useRef,
+  useState,
+  type PointerEvent as ReactPointerEvent,
+  type WheelEvent as ReactWheelEvent,
+} from "react";
 
 import { AvatarBadge } from "@/components/avatar-badge";
 import { buildGraphEdges } from "@/lib/directory";
@@ -263,17 +270,17 @@ export function NetworkGraph({
         "link",
         forceLink<GraphNode, ForceLink>(links)
           .id((node) => node.id)
-          .distance(104)
-          .strength(0.82),
+          .distance(118)
+          .strength(0.76),
       )
-      .force("charge", forceManyBody().strength(-160))
-      .force("collision", forceCollide(52).strength(1))
+      .force("charge", forceManyBody().strength(-190))
+      .force("collision", forceCollide(54).strength(1))
       .force("center", forceCenter(size.width / 2, size.height / 2))
       .force("x", forceX(size.width / 2).strength(0.08))
       .force("y", forceY(size.height / 2).strength(0.08))
-      .alpha(0.7)
-      .alphaDecay(0.18)
-      .velocityDecay(0.42)
+      .alpha(0.72)
+      .alphaDecay(0.16)
+      .velocityDecay(0.4)
       .stop();
 
     simulation.on("tick", () => {
@@ -392,7 +399,7 @@ export function NetworkGraph({
     };
   }, []);
 
-  function handleBackgroundPointerDown(event: React.PointerEvent<HTMLDivElement>) {
+  function handleBackgroundPointerDown(event: ReactPointerEvent<HTMLDivElement>) {
     if ((event.target as HTMLElement).closest("[data-graph-node='true']")) {
       return;
     }
@@ -406,7 +413,7 @@ export function NetworkGraph({
     };
   }
 
-  function handleWheel(event: React.WheelEvent<HTMLDivElement>) {
+  function handleWheel(event: ReactWheelEvent<HTMLDivElement>) {
     event.preventDefault();
 
     const container = containerRef.current;
@@ -437,7 +444,7 @@ export function NetworkGraph({
   }
 
   function handleNodePointerDown(
-    event: React.PointerEvent<HTMLButtonElement>,
+    event: ReactPointerEvent<HTMLButtonElement>,
     memberId: string,
   ) {
     event.stopPropagation();
@@ -454,31 +461,31 @@ export function NetworkGraph({
   const htmlTransform = `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.scale})`;
 
   return (
-    <section aria-label="Lab member network graph" className="space-y-4">
+    <section aria-label="Student network graph" className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="micro-label text-[var(--muted)]">Graph</p>
           <h3 className="mt-2 text-xl font-semibold tracking-tight text-[var(--text)]">
-            Curated relationships across the Lab
+            Student map
           </h3>
         </div>
-        <p className="micro-label text-[var(--muted)]">
-          {graphState.nodes.length} nodes · {graphState.links.length} links
+        <p className="max-w-[14rem] text-right text-[0.76rem] leading-5 text-[var(--muted)]">
+          Shared schools and public profile overlap shape the links.
         </p>
       </div>
 
       <div
         ref={containerRef}
-        className="surface-panel relative h-[22rem] overflow-hidden rounded-[1.75rem] border sm:h-[24rem] lg:h-[28rem] xl:h-[30rem]"
+        className="surface-panel relative h-[22rem] overflow-hidden rounded-[1.75rem] border border-[var(--border)] sm:h-[24rem] lg:h-[28rem] xl:h-[30rem]"
         onPointerDown={handleBackgroundPointerDown}
         onWheel={handleWheel}
       >
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(157,245,207,0.08),transparent_42%)]" />
-        <div className="pointer-events-none absolute inset-0 opacity-40 [background-image:linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] [background-size:32px_32px]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(37,128,255,0.12),transparent_42%)]" />
+        <div className="pointer-events-none absolute inset-0 opacity-40 [background-image:linear-gradient(rgba(24,24,24,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(24,24,24,0.05)_1px,transparent_1px)] [background-size:32px_32px]" />
 
         {graphState.nodes.length === 0 ? (
           <div className="absolute inset-0 flex items-center justify-center px-6 text-center text-sm text-[var(--muted)]">
-            No members match the current search and filters yet.
+            No students are available for the graph yet.
           </div>
         ) : null}
 
@@ -496,8 +503,8 @@ export function NetworkGraph({
                   y1={link.y1}
                   x2={link.x2}
                   y2={link.y2}
-                  stroke={isActive ? "rgba(157, 245, 207, 0.72)" : "var(--graph-line)"}
-                  strokeWidth={isActive ? 2.1 : 1}
+                  stroke={isActive ? "rgba(37,128,255,0.72)" : "rgba(37,128,255,0.18)"}
+                  strokeWidth={isActive ? 2.2 : 1.1}
                 />
               );
             })}
@@ -517,12 +524,13 @@ export function NetworkGraph({
                 key={node.id}
                 type="button"
                 data-graph-node="true"
+                aria-label={`Focus ${node.member.name}`}
                 aria-pressed={isSelected}
                 className={`pointer-events-auto absolute -translate-x-1/2 -translate-y-1/2 rounded-full transition-shadow ${
                   isSelected
-                    ? "z-20 shadow-[0_0_0_1px_rgba(157,245,207,0.9),0_0_36px_rgba(157,245,207,0.24)]"
+                    ? "z-20 shadow-[0_0_0_1px_rgba(37,128,255,0.45),0_0_42px_rgba(176,109,255,0.24)]"
                     : isActive
-                      ? "z-10 shadow-[0_0_0_1px_rgba(157,245,207,0.35),0_0_24px_rgba(157,245,207,0.16)]"
+                      ? "z-10 shadow-[0_0_0_1px_rgba(37,128,255,0.26),0_0_28px_rgba(37,128,255,0.18)]"
                       : "shadow-none"
                 }`}
                 style={{ left: `${node.x}px`, top: `${node.y}px` }}
@@ -530,10 +538,10 @@ export function NetworkGraph({
                 onMouseEnter={() => onHover(node.id)}
                 onMouseLeave={() => onHover(null)}
               >
-                <span className="block rounded-full border border-white/10 bg-[rgba(6,9,15,0.92)] px-2 py-2">
+                <span className="block rounded-full border border-[var(--border)] bg-[rgba(255,255,255,0.88)] px-2 py-2 backdrop-blur-md">
                   <span className="flex items-center gap-2">
                     <AvatarBadge member={node.member} size="sm" />
-                    <span className="hidden max-w-[9.75rem] text-left text-xs font-medium leading-tight text-[var(--text)] sm:block">
+                    <span className="hidden max-w-[10rem] text-left text-xs font-medium leading-tight text-[var(--text)] sm:block">
                       {node.member.name}
                     </span>
                   </span>

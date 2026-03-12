@@ -15,6 +15,13 @@ function formatDeploymentLabel(deploymentId?: string) {
 export function BuildProvenancePanel({
   buildProvenance,
 }: BuildProvenanceProps) {
+  const shouldRenderPanel =
+    buildProvenance.isGitDeployment || Boolean(buildProvenance.warning);
+
+  if (!shouldRenderPanel) {
+    return null;
+  }
+
   const deploymentLabel = formatDeploymentLabel(buildProvenance.deploymentId);
 
   return (

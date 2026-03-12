@@ -141,3 +141,36 @@ input {
   background: rgba(37, 128, 255, 0.22);
   background-clip: padding-box;
 }
+
+.terminal-font {
+  font-family:
+    ui-monospace,
+    "SF Mono",
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    "Liberation Mono",
+    monospace;
+}
+
+.terminal-cursor {
+  display: inline-block;
+  width: 0.55rem;
+  height: 1em;
+  transform: translateY(0.12em);
+  background: currentColor;
+  animation: terminal-blink 1s steps(1, end) infinite;
+}
+
+@keyframes terminal-blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+
+  50.01%,
+  100% {
+    opacity: 0;
+  }
+}

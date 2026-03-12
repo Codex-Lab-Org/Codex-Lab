@@ -1,10 +1,10 @@
 import { getBuildProvenance } from "@/lib/build-provenance";
-import { DirectoryHome } from "@/components/directory-home";
+import { DirectoryHomeExperience } from "@/components/directory-home-experience";
 import { members } from "@/lib/members";
 
 export default function Home() {
   return (
-    <DirectoryHome
+    <DirectoryHomeExperience
       initialMembers={members}
       buildProvenance={getBuildProvenance()}
     />

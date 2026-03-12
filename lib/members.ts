@@ -292,6 +292,41 @@ const rawMembers: RawMember[] = [
       instagram: "@jake.grigorian",
       linkedin: "https://linkedin.com/in/jakegrigorian",
     },
+    profile: {
+      majorYear: "Computer Science, Class of 2027",
+      location: "Los Angeles, California",
+      interests: [
+        "Machine learning",
+        "Performance optimization",
+        "Applied research",
+        "Community storytelling",
+      ],
+      projects: [
+        {
+          name: "Narinay",
+          summary:
+            "The Armenian Urban Dictionary. Built fully using Codex and serving thousands of Armenian community members across Southern California and beyond.",
+          href: "https://narinay.com",
+        },
+      ],
+      tools: ["Codex", "ChatGPT", "OpenClaw"],
+      repoDemoLinks: [
+        {
+          label: "Personal site",
+          href: "https://jakegrigorian.com",
+        },
+        {
+          label: "LinkedIn",
+          href: "https://linkedin.com/in/jakegrigorian",
+        },
+        {
+          label: "Devpost – Caltech hackathon win",
+          href: "https://devpost.com/software/swerve-gqmenk",
+        },
+      ],
+      about:
+        "I’m a USC CS student experimenting with machine learning, performance optimization, and research-driven builds. I play faceoff midfielder for USC lacrosse and the Armenian Olympic/National Lacrosse Team, and I love showcasing Armenian culture through projects like Narinay.",
+    },
   },
   {
     id: "dylan-li",

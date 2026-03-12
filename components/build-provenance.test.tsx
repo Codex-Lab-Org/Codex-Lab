@@ -4,7 +4,7 @@ import { describe, expect, test } from "vitest";
 import { BuildProvenancePanel } from "@/components/build-provenance";
 
 describe("BuildProvenancePanel", () => {
-  test("hides the panel for local workspace builds without provenance data", () => {
+  test("stays hidden for local workspace builds without provenance data", () => {
     const { container } = render(
       <BuildProvenancePanel
         buildProvenance={{
@@ -23,8 +23,8 @@ describe("BuildProvenancePanel", () => {
     expect(container).toBeEmptyDOMElement();
   });
 
-  test("shows git deployment details when metadata is available", () => {
-    render(
+  test("stays hidden when git deployment metadata is available", () => {
+    const { container } = render(
       <BuildProvenancePanel
         buildProvenance={{
           branch: "main",
@@ -39,13 +39,16 @@ describe("BuildProvenancePanel", () => {
       />,
     );
 
-    expect(screen.getByRole("region", { name: /build provenance/i })).toBeInTheDocument();
-    expect(screen.getByText(/This build is traced to/i)).toBeInTheDocument();
-    expect(screen.getByText("Environment: production")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("region", {
+        name: /build provenance/i,
+      }),
+    ).not.toBeInTheDocument();
+    expect(container).toBeEmptyDOMElement();
   });
 
-  test("shows the warning for Vercel deployments without git metadata", () => {
-    render(
+  test("stays hidden for Vercel deployments without git metadata", () => {
+    const { container } = render(
       <BuildProvenancePanel
         buildProvenance={{
           isGitDeployment: false,
@@ -57,10 +60,11 @@ describe("BuildProvenancePanel", () => {
       />,
     );
 
-    expect(screen.getByRole("region", { name: /build provenance/i })).toBeInTheDocument();
-    expect(screen.getByText(/This build does not expose Git source metadata\./i)).toBeInTheDocument();
     expect(
-      screen.getByText(/Production deploys are blocked unless Vercel can prove which Git commit they came from\./i),
-    ).toBeInTheDocument();
+      screen.queryByRole("region", {
+        name: /build provenance/i,
+      }),
+    ).not.toBeInTheDocument();
+    expect(container).toBeEmptyDOMElement();
   });
 });

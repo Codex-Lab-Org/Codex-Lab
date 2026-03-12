@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { AvatarBadge } from "@/components/avatar-badge";
 import {
   ArrowUpRightIcon,
@@ -11,8 +13,8 @@ import type { Member } from "@/lib/members";
 type MemberTableProps = {
   members: Member[];
   selectedId?: string | null;
+  hoveredId?: string | null;
   connectedIds?: Set<string>;
-  onSelect?: (memberId: string) => void;
   onHover?: (memberId: string | null) => void;
 };
 
@@ -80,11 +82,30 @@ function SocialLinks({ member }: { member: Member }) {
   );
 }
 
+function MemberNameLink({
+  member,
+  onHover,
+}: {
+  member: Member;
+  onHover?: (memberId: string | null) => void;
+}) {
+  return (
+    <Link
+      className="transition-colors hover:text-[var(--accent)] focus-visible:text-[var(--accent)] focus-visible:outline-none"
+      href={`/members/${member.id}`}
+      onFocus={() => onHover?.(member.id)}
+      onBlur={() => onHover?.(null)}
+    >
+      {member.name}
+    </Link>
+  );
+}
+
 export function MemberTable({
   members,
   selectedId = null,
+  hoveredId = null,
   connectedIds,
-  onSelect,
   onHover,
 }: MemberTableProps) {
   const hasAnyWebsite = members.some((member) => Boolean(member.website));
@@ -110,55 +131,56 @@ export function MemberTable({
 
         {members.map((member) => {
           const isSelected = member.id === selectedId;
+          const isHovered = member.id === hoveredId;
           const isConnected = connectedIds?.has(member.id) ?? false;
 
           return (
             <article
               key={member.id}
+              data-member-card={member.id}
               className={`surface-panel rounded-[1.5rem] px-4 py-4 transition-colors ${
                 isSelected
                   ? "border-[var(--border-strong)] bg-[var(--panel-strong)]"
+                  : isHovered
+                    ? "bg-[var(--panel-soft)]"
                   : isConnected
                     ? "bg-[var(--panel-soft)]"
                     : ""
-              } ${onSelect ? "cursor-pointer" : ""}`.trim()}
-              onClick={(event) => {
-                if ((event.target as HTMLElement).closest("a")) {
-                  return;
-                }
-
-                onSelect?.(member.id);
-              }}
+              }`.trim()}
               onMouseEnter={() => onHover?.(member.id)}
               onMouseLeave={() => onHover?.(null)}
             >
-            <div className="flex items-center gap-3">
-              <AvatarBadge member={member} />
-              <p className="text-base font-medium text-[var(--text)]">{member.name}</p>
-            </div>
+              <div className="flex items-center gap-3">
+                <AvatarBadge member={member} />
+                <p className="text-base font-medium text-[var(--text)]">
+                  <MemberNameLink member={member} onHover={onHover} />
+                </p>
+              </div>
 
-            <div
-              className={`mt-4 gap-x-4 gap-y-3 text-sm ${
-                hasAnyWebsite ? "grid grid-cols-2" : "space-y-3"
-              }`}
-            >
-              <div className="space-y-1">
-                <p className="micro-label text-[var(--muted)]">university</p>
-                <p className="text-[var(--text)]">{member.university ?? <EmptyCell />}</p>
-              </div>
-              {hasAnyWebsite ? (
+              <div
+                className={`mt-4 gap-x-4 gap-y-3 text-sm ${
+                  hasAnyWebsite ? "grid grid-cols-2" : "space-y-3"
+                }`}
+              >
                 <div className="space-y-1">
-                  <p className="micro-label text-[var(--muted)]">site</p>
-                  <div className="text-[var(--text)]">
-                    <WebsiteCell member={member} />
-                  </div>
+                  <p className="micro-label text-[var(--muted)]">university</p>
+                  <p className="text-[var(--text)]">{member.university ?? <EmptyCell />}</p>
                 </div>
-              ) : null}
-              <div className={`space-y-1 ${hasAnyWebsite ? "col-span-2" : ""}`}>
-                <p className="micro-label text-[var(--muted)]">links</p>
-                <SocialLinks member={member} />
+
+                {hasAnyWebsite ? (
+                  <div className="space-y-1">
+                    <p className="micro-label text-[var(--muted)]">site</p>
+                    <div className="text-[var(--text)]">
+                      <WebsiteCell member={member} />
+                    </div>
+                  </div>
+                ) : null}
+
+                <div className={`space-y-1 ${hasAnyWebsite ? "col-span-2" : ""}`}>
+                  <p className="micro-label text-[var(--muted)]">links</p>
+                  <SocialLinks member={member} />
+                </div>
               </div>
-            </div>
             </article>
           );
         })}
@@ -195,47 +217,44 @@ export function MemberTable({
 
               {members.map((member) => {
                 const isSelected = member.id === selectedId;
+                const isHovered = member.id === hoveredId;
                 const isConnected = connectedIds?.has(member.id) ?? false;
 
                 return (
                   <tr
                     key={member.id}
+                    data-member-row={member.id}
                     className={`border-t border-[var(--border)] transition-colors ${
                       isSelected
                         ? "bg-[var(--panel-soft-strong)]"
+                        : isHovered
+                          ? "bg-[var(--panel-soft)]"
                         : isConnected
                           ? "bg-[var(--panel-soft)]"
                           : "hover:bg-[var(--panel-soft)]"
-                    } ${onSelect ? "cursor-pointer" : ""}`.trim()}
-                    onClick={(event) => {
-                      if ((event.target as HTMLElement).closest("a")) {
-                        return;
-                      }
-
-                      onSelect?.(member.id);
-                    }}
+                    }`.trim()}
                     onMouseEnter={() => onHover?.(member.id)}
                     onMouseLeave={() => onHover?.(null)}
                   >
-                  <td className="px-5 py-5 align-middle">
-                    <div className="flex items-center gap-4">
-                      <AvatarBadge member={member} />
-                      <p className="truncate text-sm font-medium text-[var(--text)]">
-                        {member.name}
-                      </p>
-                    </div>
-                  </td>
-                  <td className="px-5 py-5 align-middle text-sm text-[var(--text)]">
-                    {member.university ?? <EmptyCell />}
-                  </td>
-                  {hasAnyWebsite ? (
-                    <td className="px-5 py-5 align-middle text-sm text-[var(--text)]">
-                      <WebsiteCell member={member} />
+                    <td className="px-5 py-5 align-middle">
+                      <div className="flex items-center gap-4">
+                        <AvatarBadge member={member} />
+                        <p className="truncate text-sm font-medium text-[var(--text)]">
+                          <MemberNameLink member={member} onHover={onHover} />
+                        </p>
+                      </div>
                     </td>
-                  ) : null}
-                  <td className="px-5 py-5 align-middle">
-                    <SocialLinks member={member} />
-                  </td>
+                    <td className="px-5 py-5 align-middle text-sm text-[var(--text)]">
+                      {member.university ?? <EmptyCell />}
+                    </td>
+                    {hasAnyWebsite ? (
+                      <td className="px-5 py-5 align-middle text-sm text-[var(--text)]">
+                        <WebsiteCell member={member} />
+                      </td>
+                    ) : null}
+                    <td className="px-5 py-5 align-middle">
+                      <SocialLinks member={member} />
+                    </td>
                   </tr>
                 );
               })}

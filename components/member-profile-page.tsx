@@ -7,6 +7,8 @@ import { formatWebsiteLabel } from "@/lib/directory";
 import type { BuildProvenance } from "@/lib/build-provenance";
 import type { Member } from "@/lib/members";
 
+const DIRECTORY_RETURN_HREF = "/?skipIntro=1";
+
 type MemberProfilePageProps = {
   buildProvenance: BuildProvenance;
   member: Member;
@@ -111,7 +113,7 @@ export function MemberProfilePage({
 
           <Link
             className="tag-button inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium transition-colors hover:border-[var(--border-strong)] hover:text-[var(--text-strong)]"
-            href="/"
+            href={DIRECTORY_RETURN_HREF}
           >
             Back to directory
           </Link>

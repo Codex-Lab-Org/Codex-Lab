@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+const DIRECTORY_RETURN_HREF = "/?skipIntro=1";
+
 export default function NotFound() {
   return (
     <main className="min-h-screen px-4 py-6 text-[var(--text)] sm:px-6 sm:py-8 lg:px-8">
@@ -21,7 +23,7 @@ export default function NotFound() {
 
           <Link
             className="tag-button inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium transition-colors hover:border-[var(--border-strong)] hover:text-[var(--text-strong)]"
-            href="/"
+            href={DIRECTORY_RETURN_HREF}
           >
             Back to directory
           </Link>

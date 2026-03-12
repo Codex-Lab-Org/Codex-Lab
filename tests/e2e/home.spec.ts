@@ -43,7 +43,7 @@ test("navigates from the directory to a routed member page", async ({ page }) =>
   ).toBeVisible();
   await expect(
     page.getByRole("link", { name: "Back to directory" }),
-  ).toHaveAttribute("href", "/");
+  ).toHaveAttribute("href", "/?skipIntro=1");
 });
 
 test("supports direct navigation to valid and invalid member routes", async ({
@@ -70,6 +70,27 @@ test("supports direct navigation to valid and invalid member routes", async ({
   await expect(
     page.getByRole("link", { name: "Back to directory" }),
   ).toBeVisible();
+});
+
+test("returns from a member page without replaying the terminal intro", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/members/soham-kolhe");
+
+  await page.getByRole("link", { name: "Back to directory" }).click();
+
+  await expect(page).toHaveURL(/\/\?skipIntro=1$/);
+  await expect(
+    page.getByRole("heading", {
+      name: /student directory/i,
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", {
+      name: /launching the student directory/i,
+    }),
+  ).toHaveCount(0);
 });
 
 test("keeps the directory readable on mobile without horizontal overflow", async ({

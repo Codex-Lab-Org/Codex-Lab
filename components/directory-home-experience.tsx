@@ -11,6 +11,7 @@ import type { Member } from "@/lib/members";
 type DirectoryHomeExperienceProps = {
   buildProvenance: BuildProvenance;
   initialMembers: Member[];
+  skipIntro?: boolean;
 };
 
 const easing = [0.22, 1, 0.36, 1] as const;
@@ -18,9 +19,10 @@ const easing = [0.22, 1, 0.36, 1] as const;
 export function DirectoryHomeExperience({
   buildProvenance,
   initialMembers,
+  skipIntro = false,
 }: DirectoryHomeExperienceProps) {
   const prefersReducedMotion = useReducedMotion();
-  const [introComplete, setIntroComplete] = useState(prefersReducedMotion);
+  const [introComplete, setIntroComplete] = useState(skipIntro || prefersReducedMotion);
 
   const introLines = useMemo(
     () => [
@@ -52,7 +54,7 @@ export function DirectoryHomeExperience({
     [initialMembers.length],
   );
 
-  if (prefersReducedMotion) {
+  if (prefersReducedMotion || skipIntro) {
     return <DirectoryHome buildProvenance={buildProvenance} initialMembers={initialMembers} />;
   }
 

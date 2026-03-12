@@ -326,6 +326,13 @@ const rawMembers: RawMember[] = [
       ],
       about:
         "I’m a USC CS student experimenting with machine learning, performance optimization, and research-driven builds. I play faceoff midfielder for USC lacrosse and the Armenian Olympic/National Lacrosse Team, and I love showcasing Armenian culture through projects like Narinay.",
+      customSections: [
+        {
+          title: "Research",
+          body:
+            "Co-authored two machine-learning papers in computational astrophysics at Caltech: “N-body Orbit Reconstruction with Neural Operators” (https://arxiv.org/pdf/2406.09690) and “SWERVE: Scalable Waveform Emulation for Relativistic Variability Exploration” (https://arxiv.org/pdf/2408.14447).",
+        },
+      ],
     },
   },
   {

@@ -479,6 +479,78 @@ const rawMembers: RawMember[] = [
     },
   },
   {
+    id: "ben-antonow",
+    name: "Ben Antonow",
+    university: "University of Michigan 〽️",
+    website: "https://anto.now",
+    avatar: "/avatars/students/ben-antonow.jpg",
+    links: {
+      linkedin: "https://www.linkedin.com/in/benantonow",
+      x: "https://x.com/benantonow",
+    },
+    profile: {
+      headline:
+        "University of Michigan CS student building across AI, health tech, and interface-heavy products.",
+      majorYear: "Computer Science, Senior",
+      location: "Ann Arbor, MI / Palo Alto, CA",
+      builderType: "Curious mind 🧠 in a curious world 🌎",
+      interests: [
+        "Image and diagram generation",
+        "Health tech",
+        "Wearables",
+        "Digital detoxing",
+        "Philosophy",
+        "Yoga",
+        "Dancing",
+        "Live music",
+      ],
+      tools: [
+        "Python",
+        "C/C++",
+        "JavaScript",
+        "Go",
+        "React",
+        "Next.js",
+        "AWS",
+        "PostgreSQL",
+      ],
+      projects: [
+        {
+          name: "Oreen",
+          summary:
+            "An AI diagram generation tool for teaching and learning, built to make visual explanation easier and faster.",
+        },
+        {
+          name: "Silent Meditation",
+          summary:
+            "A silent vinyl record project that beat its Kickstarter goal by 1000% and sold hundreds of copies.",
+        },
+      ],
+      repoDemoLinks: [
+        {
+          label: "Personal site",
+          href: "https://anto.now",
+        },
+        {
+          label: "GitHub",
+          href: "https://github.com/bantonow",
+        },
+        {
+          label: "LinkedIn",
+          href: "https://www.linkedin.com/in/benantonow",
+        },
+      ],
+      about:
+        "I'm Ben, a student, teacher, and builder at the University of Michigan. I love learning, meeting interesting people, and doing hard things!",
+      customSections: [
+        {
+          title: "Status",
+          body: "🟢 Being nerd-sniped by Codex",
+        },
+      ],
+    },
+  },
+  {
     id: "mark-music",
     name: "Mark Music",
     university: "Stanford",
@@ -805,9 +877,72 @@ const rawMembers: RawMember[] = [
   {
     id: "gautam-soni",
     name: "Gautam Soni",
+    university: "Virginia Tech",
+    website: "https://github.com/gsoni1",
     avatar: "/avatars/students/gautam-soni.jpg",
     links: {
       linkedin: "https://www.linkedin.com/in/gsoni16",
+    },
+    profile: {
+      headline:
+        "Virginia Tech CS student building AI systems and iOS products, focused on turning research and prototypes into real user-facing experiences.",
+      majorYear: "B.S. in Computer Science, graduating May 2027",
+      location: "New York City",
+      builderType: "AI and iOS product builder",
+      interests: [
+        "Agentic workflows",
+        "iOS product engineering",
+        "LLM systems and evaluation",
+        "Developer tools",
+        "Product strategy",
+      ],
+      tools: [
+        "Swift",
+        "SwiftUI",
+        "UIKit",
+        "MapKit",
+        "Python",
+        "TypeScript",
+        "React",
+        "Codex",
+        "RAG pipelines",
+      ],
+      projects: [
+        {
+          name: "HitmanHints",
+          summary:
+            "Built a multi-stage LLM assistant that parses long transcripts into actionable sequences and generates spoiler-free, context-aware hints in real time. Improved latency by 40% while maintaining output quality through prompt and model optimization.",
+        },
+        {
+          name: "OneDrive iOS Map View",
+          summary:
+            "Shipped a new photo discovery surface in OneDrive iOS used by XXM+ monthly users, and helped reduce feature load time by six seconds with performance profiling and architecture improvements.",
+        },
+      ],
+      repoDemoLinks: [
+        {
+          label: "GitHub",
+          href: "https://github.com/gsoni1",
+        },
+        {
+          label: "LinkedIn",
+          href: "https://www.linkedin.com/in/gsoni16",
+        },
+      ],
+      about:
+        "I'm Gautam, a CS student at Virginia Tech who likes building AI-powered products that are both technically rigorous and useful in practice. I spend most of my time on iOS engineering, LLM workflows, and product experimentation, especially where engineering depth and product thinking overlap.",
+      customSections: [
+        {
+          title: "Experience highlights",
+          body:
+            "Incoming Software Engineer Intern at Microsoft (Summer 2026). Explore Intern at Microsoft in 2025 across software engineering and product management, where I shipped OneDrive iOS features and contributed to monetization strategy. Codex Lab Member at OpenAI, collaborating with student builders on agentic workflows. Undergraduate TA for Virginia Tech CS 3714, helping students build production-quality iOS apps.",
+        },
+        {
+          title: "What I am exploring now",
+          body:
+            "Designing reliable LLM pipelines with stronger retrieval and evaluation loops, and learning how to move from fast prototype quality to durable product quality in AI-native apps.",
+        },
+      ],
     },
   },
   {

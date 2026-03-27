@@ -801,6 +801,45 @@ const rawMembers: RawMember[] = [
     links: {
       linkedin: "https://www.linkedin.com/in/avitalmintz/",
     },
+    profile: {
+      headline:
+        "UChicago student researching how LLMs form and reshape concepts across political perspectives, with a secondary focus on criminal psychology.",
+      majorYear: "Psychology and Data Science, 2026",
+      location: "Chicago, IL",
+      builderType: "Student builder",
+      interests: [
+        "LLM interpretability",
+        "AI in healthcare",
+        "Human-AI interaction",
+        "Forensic psychology",
+      ],
+      tools: ["Codex", "Cursor", "Snowflake", "Git", "AWS", "Claude Code", "Python"],
+      projects: [
+        {
+          name: "Fifth Avenue Forensics (AI Implementation)",
+          summary:
+            "Built and deployed a HIPAA-compliant AI system for forensic psychological report generation, used in real clinical and legal workflows.",
+        },
+        {
+          name: "LLM Interpretability Research (UChicago Knowledge Lab)",
+          summary:
+            "Analyzing how political perspectives reshape concept representations in language models through activation-level experiments.",
+        },
+      ],
+      repoDemoLinks: [
+        {
+          label: "GitHub",
+          href: "https://github.com/avitalmintz",
+        },
+        {
+          label: "LinkedIn",
+          href: "https://www.linkedin.com/in/avitalmintz/",
+        },
+      ],
+      about:
+        "Avital studies Psychology and Data Science at the University of Chicago and focuses on LLM interpretability research across political perspectives, with additional work at the intersection of AI and forensic psychology.",
+      customSections: [],
+    },
   },
   {
     id: "gautam-soni",

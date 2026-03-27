@@ -18,6 +18,12 @@ describe("directory helpers", () => {
       "https://www.tiktok.com/@jasonyi33/",
     );
     expect(getMemberById("jason-yi")?.profile.headline).toContain("UC Berkeley");
+    expect(getMemberById("jinao-wang")?.name).toBe("Michael Wang");
+    expect(
+      getMemberById("jinao-wang")?.profile.projects.some(
+        (project) => project.name === "Token Monitor",
+      ),
+    ).toBe(true);
   });
 
   test("formats website labels without the protocol", () => {
